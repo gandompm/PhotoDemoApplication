@@ -51,15 +51,15 @@ class PixabayRepositoryImp @Inject constructor(
 
 
             remoteResponse.let { listings ->
-                db.dao.clearImageListing()
-                db.dao.insertImageListing(
-                    listings.map { it.toImage().toImageEntity()}
-                )
-                emit(Resource.Success<List<Image>>(
-                    data = db.dao
-                        .searchImageListing("")
-                        .map { it.toImage() }
-                ))
+                    db.dao.clearImageListing()
+                    db.dao.insertImageListing(
+                        listings.map { it.toImage().toImageEntity()}
+                    )
+                    emit(Resource.Success<List<Image>>(
+                        data = db.dao
+                            .searchImageListing("")
+                            .map { it.toImage() }
+                    ))
             }
         }
     }

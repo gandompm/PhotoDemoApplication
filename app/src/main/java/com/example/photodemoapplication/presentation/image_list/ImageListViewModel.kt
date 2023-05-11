@@ -59,12 +59,12 @@ class ImageListViewModel @Inject constructor(
                 searchJob = viewModelScope.launch {
                     delay(500L)
                     /**
-                     * here we do the search in remote
+                     * here we do the search in local
                      *
                      * another strategy could be to only
-                     * search in local data base
+                     * search in remote data base
                      */
-                    getImages(fetchFromRemote= true)
+                    getImages()
                 }
             }
         }
