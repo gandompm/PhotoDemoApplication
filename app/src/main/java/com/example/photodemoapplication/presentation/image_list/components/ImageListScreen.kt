@@ -30,7 +30,7 @@ fun ImageListScreen(
     navigator: DestinationsNavigator,
     viewModel: ImageListViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.state
 
 
     Column(modifier = Modifier.fillMaxSize()){

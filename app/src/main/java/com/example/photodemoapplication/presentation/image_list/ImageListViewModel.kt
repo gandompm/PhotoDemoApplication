@@ -22,8 +22,7 @@ class ImageListViewModel @Inject constructor(
     private val getImagesUseCase: GetImagesUseCase
 ) : ViewModel(){
 
-    private val _state = mutableStateOf(ImageListState())
-    val state: State<ImageListState> = _state
+    var state by mutableStateOf(ImageListState())
 
     var isDialogShown by mutableStateOf(false)
         private set
@@ -35,7 +34,7 @@ class ImageListViewModel @Inject constructor(
     }
 
     fun onImageItemClick(imageId: Int){
-        _state.value.selectedImageId = imageId
+        state.selectedImageId = imageId
         isDialogShown = true
     }
 
@@ -49,7 +48,7 @@ class ImageListViewModel @Inject constructor(
                 getImages(fetchFromRemote = true)
             }
             is ImageListEvents.OnSearchQueryChange -> {
-                _state.value = _state.value.copy(searchQuery = event.query)
+                state = state.copy(searchQuery = event.query)
                 /**
                  * to avoid too many requests each time
                  * the user types a letter
@@ -59,19 +58,18 @@ class ImageListViewModel @Inject constructor(
                 searchJob = viewModelScope.launch {
                     delay(500L)
                     /**
-                     * here we do the search in local
-                     *
-                     * another strategy could be to only
-                     * search in remote data base
+                     * here we do the search first in local
+                     * and then in remote once we get the
+                     * response from remote api
                      */
-                    getImages()
+                    getImages(fetchFromRemote = true)
                 }
             }
         }
     }
 
     private fun getImages(
-        query: String = _state.value.searchQuery.lowercase(),
+        query: String = state.searchQuery.lowercase(),
         fetchFromRemote: Boolean = false
     ){
 
@@ -79,19 +77,21 @@ class ImageListViewModel @Inject constructor(
             result ->
                 when(result){
                     is Resource.Success -> {
-                        _state.value = ImageListState(
-                            images = result.data ?: emptyList(),
-                            searchQuery = query
+                        state = state.copy(
+                            images = result.data ?: emptyList()
                         )
                     }
                     is Resource.Error -> {
-                        _state.value = ImageListState(
-                            error = result.message ?: "An unexpected error occurred",
-                            searchQuery = query
+
+                        state = state.copy(
+                            error = result.message ?: "An unexpected error occurred"
                         )
+
                     }
                     is Resource.Loading -> {
-                        _state.value = ImageListState(isLoading = true, searchQuery = query)
+                        state = state.copy(
+                            isLoading = true
+                        )
                     }
                 }
         }.launchIn(viewModelScope)
