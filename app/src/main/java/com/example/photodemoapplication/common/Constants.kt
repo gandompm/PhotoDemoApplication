@@ -10,4 +10,6 @@ object Constants {
 
     const val BASE_URL = "https://pixabay.com/api/"
     const val API_KEY = "36014268-fb45f776880a5f3f55fd690fa"
+
+    const val MIN_SEARCH_QUERY_LENGTH = 3
 }

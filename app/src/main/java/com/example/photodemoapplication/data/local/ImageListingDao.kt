@@ -22,7 +22,7 @@ interface ImageListingDao {
             SELECT * 
             FROM imageentity
             WHERE LOWER(tags) LIKE '%' || LOWER(:query) || '%' OR
-                LOWER(:query) == user
+                LOWER(:query) LIKE LOWER(user)
         """
     )
     suspend fun searchImageListing(query: String): List<ImageEntity>

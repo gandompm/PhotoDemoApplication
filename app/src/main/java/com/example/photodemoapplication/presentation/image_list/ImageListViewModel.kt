@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.photodemoapplication.common.Constants
 import com.example.photodemoapplication.common.Resource
 import com.example.photodemoapplication.domain.use_case.get_imagesList.GetImagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,15 +55,18 @@ class ImageListViewModel @Inject constructor(
                  * the user types a letter
                  * we have to consider a 500 ms delay
                  */
-                searchJob?.cancel()
-                searchJob = viewModelScope.launch {
-                    delay(500L)
-                    /**
-                     * here we do the search first in local
-                     * and then in remote once we get the
-                     * response from remote api
-                     */
-                    getImages(fetchFromRemote = true)
+                if (state.searchQuery.length >= Constants.MIN_SEARCH_QUERY_LENGTH){
+
+                    searchJob?.cancel()
+                    searchJob = viewModelScope.launch {
+                        delay(500L)
+                        /**
+                         * here we do the search first in local
+                         * and then in remote once we get the
+                         * response from remote api
+                         */
+                        getImages(fetchFromRemote = true)
+                    }
                 }
             }
         }
@@ -82,11 +86,9 @@ class ImageListViewModel @Inject constructor(
                         )
                     }
                     is Resource.Error -> {
-
                         state = state.copy(
                             error = result.message ?: "An unexpected error occurred"
                         )
-
                     }
                     is Resource.Loading -> {
                         state = state.copy(
